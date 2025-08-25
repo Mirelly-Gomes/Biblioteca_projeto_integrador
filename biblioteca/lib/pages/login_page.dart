@@ -1,6 +1,7 @@
 import 'package:biblioteca/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
+// Página de Login
 class LoginPage extends StatefulWidget {
   static const String route = "/login";
   const LoginPage({super.key});
@@ -10,32 +11,33 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // Controladores dos campos de texto
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  // Estado de carregamento
   bool isLoading = false;
 
+  // Função de login
   Future<void> login() async {
-    setState(() {
-      isLoading = true;
-    });
+    setState(() => isLoading = true);
 
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       await Future.delayed(const Duration(seconds: 2));
-      Navigator.pushReplacementNamed(context, HomePage.route);
+      Navigator.pushReplacementNamed(context, HomePage.route); // redireciona
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Preencha todos os campos")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Preencha todos os campos")),
+      );
     }
 
-    setState(() {
-      isLoading = false;
-    });
+    setState(() => isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Fundo com imagem
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -44,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         child: Center(
+          // Card de login centralizado
           child: Container(
             height: 500,
             width: 900,
@@ -53,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             child: Row(
               children: [
-                // lado esquerdo (login)
+                // Coluna esquerda: formulário
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(40),
@@ -65,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A00D9),
+                            color: Color.fromRGBO(26, 0, 217, 1),
                           ),
                         ),
                         const SizedBox(height: 60),
@@ -74,71 +77,43 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black,
                           ),
                         ),
                         const SizedBox(height: 30),
-                        // Email
-                        Theme(
-                          data: Theme.of(context).copyWith(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                          ),
-                          child: TextField(
-                            controller: emailController,
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.person_outline),
-                              labelText: "Email",
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide.none,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF1A00D9),
-                                  width: 2,
-                                ),
-                              ),
+                        // Campo Email
+                        TextField(
+                          controller: emailController,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.person_outline),
+                            labelText: "Email",
+                            filled: true,
+                            fillColor: Colors.grey[200],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide.none,
                             ),
-                            cursorColor: const Color(0xFF1A00D9),
-                            style: const TextStyle(color: Colors.black),
                           ),
+                          cursorColor: const Color(0xFF1A00D9),
                         ),
                         const SizedBox(height: 20),
-                        // Senha
-                        Theme(
-                          data: Theme.of(context).copyWith(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                          ),
-                          child: TextField(
-                            controller: passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.lock_outline),
-                              labelText: "Senha",
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide.none,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF1A00D9),
-                                  width: 2,
-                                ),
-                              ),
+                        // Campo Senha
+                        TextField(
+                          controller: passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            labelText: "Senha",
+                            filled: true,
+                            fillColor: Colors.grey[200],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide.none,
                             ),
-                            cursorColor: const Color(0xFF1A00D9),
-                            style: const TextStyle(color: Colors.black),
                           ),
+                          cursorColor: const Color(0xFF1A00D9),
                         ),
                         const SizedBox(height: 40),
+                        // Botão de login
                         SizedBox(
                           width: double.infinity,
                           height: 45,
@@ -150,22 +125,19 @@ class _LoginPageState extends State<LoginPage> {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-                            child:
-                                isLoading
-                                    ? const CircularProgressIndicator(
-                                      color: Colors.white,
-                                    )
-                                    : const Text(
-                                      "Entrar",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
+                            child: isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : const Text("Entrar",
+                                    style: TextStyle(color: Colors.white)),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                // lado direito (imagem azul escura decorativa)
+                // Coluna direita: imagem decorativa
                 Expanded(
                   child: Container(
                     decoration: const BoxDecoration(
