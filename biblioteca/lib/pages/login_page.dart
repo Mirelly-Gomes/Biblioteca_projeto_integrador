@@ -1,7 +1,7 @@
 import 'package:biblioteca/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
-// Página de Login
 class LoginPage extends StatefulWidget {
   static const String route = "/login";
   const LoginPage({super.key});
@@ -11,33 +11,48 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // Controladores dos campos de texto
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  // Estado de carregamento
   bool isLoading = false;
 
-  // Função de login
   Future<void> login() async {
-    setState(() => isLoading = true);
-
-    if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      await Future.delayed(const Duration(seconds: 2));
-      Navigator.pushReplacementNamed(context, HomePage.route); // redireciona
-    } else {
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Preencha todos os campos")),
       );
+      return;
     }
 
-    setState(() => isLoading = false);
+    setState(() => isLoading = true);
+
+    try {
+      final response = await ApiService().login(
+        emailController.text,
+        passwordController.text,
+      );
+
+      if (response.statusCode == 200) {
+        // Se a API retornar token, você pode salvar aqui
+        // Exemplo: String token = response.data["token"];
+
+        Navigator.pushReplacementNamed(context, HomePage.route);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Erro no login: ${response.statusMessage}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erro ao conectar: $e")),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fundo com imagem
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -46,7 +61,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         child: Center(
-          // Card de login centralizado
           child: Container(
             height: 500,
             width: 900,
@@ -56,7 +70,6 @@ class _LoginPageState extends State<LoginPage> {
             ),
             child: Row(
               children: [
-                // Coluna esquerda: formulário
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(40),
@@ -80,7 +93,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         const SizedBox(height: 30),
-                        // Campo Email
                         TextField(
                           controller: emailController,
                           decoration: InputDecoration(
@@ -96,7 +108,6 @@ class _LoginPageState extends State<LoginPage> {
                           cursorColor: const Color(0xFF1A00D9),
                         ),
                         const SizedBox(height: 20),
-                        // Campo Senha
                         TextField(
                           controller: passwordController,
                           obscureText: true,
@@ -113,12 +124,11 @@ class _LoginPageState extends State<LoginPage> {
                           cursorColor: const Color(0xFF1A00D9),
                         ),
                         const SizedBox(height: 40),
-                        // Botão de login
                         SizedBox(
                           width: double.infinity,
                           height: 45,
                           child: ElevatedButton(
-                            onPressed: login,
+                            onPressed: isLoading ? null : login,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF1A00D9),
                               shape: RoundedRectangleBorder(
@@ -126,18 +136,33 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             child: isLoading
-                                ? const CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )
-                                : const Text("Entrar",
-                                    style: TextStyle(color: Colors.white)),
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : const Text(
+                                    "Entrar",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/register'); // Tela de cadastro
+                            },
+                            child: const Text(
+                              "Cadastre-se",
+                              style: TextStyle(
+                                color: Color(0xFF1A00D9),
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                // Coluna direita: imagem decorativa
                 Expanded(
                   child: Container(
                     decoration: const BoxDecoration(

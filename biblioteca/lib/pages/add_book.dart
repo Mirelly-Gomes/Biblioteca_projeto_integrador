@@ -1,5 +1,5 @@
+import '../services/api_service.dart';
 import 'package:biblioteca/pages/login_page.dart';
-import 'package:biblioteca/sembast_db.dart';
 import 'package:flutter/material.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -12,47 +12,61 @@ class AddBookPage extends StatefulWidget {
 }
 
 class _AddBookPageState extends State<AddBookPage> {
+  final ApiService _apiService = ApiService(); // usa ApiService
   TextEditingController titleController = TextEditingController();
   TextEditingController authorController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController imageController = TextEditingController();
   TextEditingController pagesController = TextEditingController();
-  final SembastDb _sembastDb = SembastDb();
   bool isSaving = false;
 
-Future<void> saveBook() async {
-  setState(() {
-    isSaving = true;
-  });
+  Future<void> saveBook() async {
+    if (titleController.text.isEmpty || authorController.text.isEmpty) {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.warning,
+        text: "Preencha o título e o autor!",
+      );
+      return;
+    }
 
-  await _sembastDb.addBook(
-    title: titleController.text,
-    author: authorController.text,
-    pages: int.tryParse(pagesController.text) ?? 0,
-    description: descriptionController.text,
-    image: imageController.text,
-  );
+    setState(() => isSaving = true);
 
-  QuickAlert.show(
-    context: context,
-    type: QuickAlertType.success,
-    text: "Livro adicionado com sucesso!",
-    onConfirmBtnTap: () {
-      Navigator.pushReplacementNamed(context, "/home"); // rota da Home
-    },
-  );
+    try {
+      await _apiService.addLivro({
+        "title": titleController.text,
+        "author": authorController.text,
+        "description": descriptionController.text,
+        "image": imageController.text,
+        "pages": int.tryParse(pagesController.text) ?? 0,
+      });
 
-  titleController.clear();
-  authorController.clear();
-  descriptionController.clear();
-  imageController.clear();
-  pagesController.clear();
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.success,
+        text: "Livro adicionado com sucesso!",
+        onConfirmBtnTap: () {
+          Navigator.pushReplacementNamed(context, "/home");
+        },
+      );
 
-  setState(() {
-    isSaving = false;
-  });
-}
+      // limpa os campos
+      titleController.clear();
+      authorController.clear();
+      descriptionController.clear();
+      imageController.clear();
+      pagesController.clear();
 
+    } catch (e) {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        text: "Erro ao adicionar livro: $e",
+      );
+    } finally {
+      setState(() => isSaving = false);
+    }
+  }
 
   InputDecoration inputStyle(String label) {
     return InputDecoration(
@@ -79,19 +93,18 @@ Future<void> saveBook() async {
           "Gerenciador de livros",
           style: TextStyle(color: Colors.white),
         ),
-       actions: [
-  Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16),
-    child: IconButton(
-      onPressed: () => Navigator.pushNamed(context, LoginPage.route),
-      icon: const Icon(
-        Icons.logout,
-        color: Color.fromRGBO(13, 71, 161, 1),
-      ),
-    ),
-  ),
-],
-
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: IconButton(
+              onPressed: () => Navigator.pushNamed(context, LoginPage.route),
+              icon: const Icon(
+                Icons.logout,
+                color: Color.fromRGBO(13, 71, 161, 1),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -122,51 +135,26 @@ Future<void> saveBook() async {
                   ),
                 ),
                 const SizedBox(height: 20),
-                TextField(
-                  controller: titleController,
-                  decoration: inputStyle("Titulo"),
-                ),
+                TextField(controller: titleController, decoration: inputStyle("Título")),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: authorController,
-                  decoration: inputStyle("Autor"),
-                ),
+                TextField(controller: authorController, decoration: inputStyle("Autor")),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: descriptionController,
-                  maxLines: 4,
-                  decoration: inputStyle("Descrição"),
-                ),
+                TextField(controller: descriptionController, maxLines: 4, decoration: inputStyle("Descrição")),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: pagesController,
-                  keyboardType: TextInputType.number,
-                  decoration: inputStyle("Quantidade de páginas"),
-                ),
+                TextField(controller: pagesController, keyboardType: TextInputType.number, decoration: inputStyle("Quantidade de páginas")),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: imageController,
-                  decoration: inputStyle("imagem"),
-                ),
+                TextField(controller: imageController, decoration: inputStyle("Imagem")),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: isSaving ? null : saveBook,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF40B8FF),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 14,
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                   ),
                   child: const Text(
                     "Adicionar",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
