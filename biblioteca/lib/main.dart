@@ -2,12 +2,11 @@ import 'package:biblioteca/pages/add_book.dart';
 import 'package:biblioteca/pages/book_page.dart';
 import 'package:biblioteca/pages/home_page.dart';
 import 'package:biblioteca/pages/login_page.dart';
-import 'package:biblioteca/sembast_db.dart';
+import 'package:biblioteca/pages/register_page.dart';
 import 'package:flutter/material.dart';
 
 void main() async{
    WidgetsFlutterBinding.ensureInitialized();
-   await SembastDb().initDb();
   runApp(const MyApp());
 }
 
@@ -27,6 +26,7 @@ class MyApp extends StatelessWidget {
         LoginPage.route: (context) => LoginPage(),
         HomePage.route: (context) => HomePage(),
         AddBookPage.route: (context) => AddBookPage(),
+        RegisterPage.route:(context) => RegisterPage()
       },
       onGenerateRoute: (settings) {
         if (settings.name == BookPage.route) {

@@ -1,7 +1,7 @@
+import '../services/api_service.dart'; // usa a classe ApiService
 import 'package:biblioteca/pages/add_book.dart';
 import 'package:biblioteca/pages/book_page.dart';
 import 'package:biblioteca/pages/login_page.dart';
-import 'package:biblioteca/sembast_db.dart';
 import 'package:flutter/material.dart';
 
 // Página inicial que lista os livros
@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final SembastDb _sembastDb = SembastDb(); // banco de dados local
+  final ApiService _apiService = ApiService(); // usa API
   List<Map<String, dynamic>> books = []; // lista de livros
 
   @override
@@ -23,12 +23,18 @@ class _HomePageState extends State<HomePage> {
     loadBooks(); // carrega os livros ao iniciar
   }
 
-  // Função que busca os livros no banco
+  // Função que busca os livros na API
   Future<void> loadBooks() async {
-    final listBooks = await _sembastDb.getBooks();
-    setState(() {
-      books = listBooks;
-    });
+    try {
+      final listBooks = await _apiService.getLivros(); // chama o método correto
+      setState(() {
+        books = List<Map<String, dynamic>>.from(listBooks);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erro ao carregar livros: $e")),
+      );
+    }
   }
 
   @override
@@ -59,18 +65,15 @@ class _HomePageState extends State<HomePage> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             int cross = 4;
-            if (constraints.maxWidth < 480)
-              cross = 2;
-            else if (constraints.maxWidth < 820)
-              cross = 3;
+            if (constraints.maxWidth < 480) cross = 2;
+            else if (constraints.maxWidth < 820) cross = 3;
 
             return GridView.builder(
               itemCount: books.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: cross,
                 crossAxisSpacing: 36,
-                mainAxisSpacing: 2, // menor distância vertical
-
+                mainAxisSpacing: 2,
               ),
               itemBuilder: (context, index) {
                 final book = books[index];
@@ -124,8 +127,8 @@ class _HomePageState extends State<HomePage> {
                       IconButton(
                         tooltip: "Excluir",
                         onPressed: () async {
-                          await _sembastDb.deleteBook(book["id"]);
-                          loadBooks();
+                          await _apiService.deleteLivro(book["id"].toString()); // método correto
+                          loadBooks(); // recarrega a lista
                         },
                         icon: const Icon(Icons.delete, color: Colors.black),
                         iconSize: 20,
