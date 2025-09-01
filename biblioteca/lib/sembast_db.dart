@@ -5,7 +5,6 @@ import 'package:sembast_web/sembast_web.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:path_provider/path_provider.dart';
 
-
 class SembastDb {
   SembastDb._internal();
   static final SembastDb _instance = SembastDb._internal();
@@ -58,5 +57,11 @@ class SembastDb {
   Future<void> deleteAllBook() async {
     await _store.delete(_db);
   }
+//Atualizar livro
+  Future<void> updateBook(Map<String, dynamic> book) async {
+    final int id = book['id'];
+    final updatedBook = Map<String, dynamic>.from(book);
+    updatedBook.remove('id'); 
+    await _store.record(id).update(_db, updatedBook);
+  }
 }
-
