@@ -1,7 +1,5 @@
-import 'package:biblioteca/pages/add_book.dart';
 import 'package:flutter/material.dart';
 
-// Página de detalhes do livro
 class BookPage extends StatefulWidget {
   static const String route = "/book";
   final Map<String, dynamic> book;
@@ -12,6 +10,38 @@ class BookPage extends StatefulWidget {
 }
 
 class _BookPageState extends State<BookPage> {
+  late TextEditingController _titleController;
+  late TextEditingController _authorController;
+  late TextEditingController _descriptionController;
+
+  bool _isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.book["title"]);
+    _authorController = TextEditingController(text: widget.book["author"]);
+    _descriptionController = TextEditingController(text: widget.book["description"]);
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _authorController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  void _saveChanges() {
+    // Atualiza os valores no livro
+    widget.book["title"] = _titleController.text;
+    widget.book["author"] = _authorController.text;
+    widget.book["description"] = _descriptionController.text;
+
+    // Fecha a página retornando o livro atualizado
+    Navigator.pop(context, widget.book);
+  }
+
   @override
   Widget build(BuildContext context) {
     final book = widget.book;
@@ -19,19 +49,18 @@ class _BookPageState extends State<BookPage> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      // Barra superior
+      backgroundColor: const Color(0xFFE6F4FF),
       appBar: AppBar(
         backgroundColor: Colors.lightBlue,
         elevation: 0,
         title: const Text(
           "Gerenciador de livros",
           style: TextStyle(
-            color: Colors.indigo,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
-          // botão voltar
           IconButton(
             icon: const Icon(Icons.exit_to_app, color: Colors.indigo),
             onPressed: () {
@@ -40,7 +69,6 @@ class _BookPageState extends State<BookPage> {
           ),
         ],
       ),
-      // Corpo da página
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -69,69 +97,146 @@ class _BookPageState extends State<BookPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // título
-                    if (book["title"] != null && book["title"].toString().isNotEmpty)
-                      Text(
-                        "Titulo: ${book["title"]}",
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.indigo,
-                        ),
-                      ),
-                    // autor
-                    if (book["author"] != null && book["author"].toString().isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          "Autor: ${book["author"]}",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.indigo,
+                    // Título
+                    _isEditing
+                        ? TextField(
+                            controller: _titleController,
+                            decoration: const InputDecoration(
+                              labelText: "Título",
+                              labelStyle: TextStyle(color: Colors.blue),
+                              border: OutlineInputBorder(),
+                            ),
+                            style: const TextStyle(color: Colors.black),
+                          )
+                        : (book["title"] != null && book["title"].toString().isNotEmpty)
+                            ? Text.rich(
+                                TextSpan(
+                                  children: [
+                                    const TextSpan(
+                                      text: "Título: ",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: book["title"],
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : const SizedBox(),
+                    const SizedBox(height: 8),
+                    // Autor
+                    _isEditing
+                        ? TextField(
+                            controller: _authorController,
+                            decoration: const InputDecoration(
+                              labelText: "Autor",
+                              labelStyle: TextStyle(color: Colors.blue),
+                              border: OutlineInputBorder(),
+                            ),
+                            style: const TextStyle(color: Colors.black),
+                          )
+                        : (book["author"] != null && book["author"].toString().isNotEmpty)
+                            ? Text.rich(
+                                TextSpan(
+                                  children: [
+                                    const TextSpan(
+                                      text: "Autor: ",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: book["author"],
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : const SizedBox(),
+                    const SizedBox(height: 20),
+                    // Descrição
+                    _isEditing
+                        ? TextField(
+                            controller: _descriptionController,
+                            decoration: const InputDecoration(
+                              labelText: "Descrição",
+                              labelStyle: TextStyle(color: Colors.blue),
+                              border: OutlineInputBorder(),
+                            ),
+                            maxLines: 5,
+                            style: const TextStyle(color: Colors.black),
+                          )
+                        : (book["description"] != null && book["description"].toString().isNotEmpty)
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "Descrição",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    book["description"],
+                                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                                  ),
+                                ],
+                              )
+                            : const SizedBox(),
+                    const SizedBox(height: 20),
+                    // Botão menor centralizado
+                    Center(
+                      child: SizedBox(
+                        width: screenWidth * 0.3,
+                        height: 40,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_isEditing) {
+                              _saveChanges(); // salva e volta para Home
+                            } else {
+                              setState(() {
+                                _isEditing = true; // apenas ativa edição
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF40B8FF),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            _isEditing ? "Salvar" : "Editar",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                    // descrição
-                    if (book["description"] != null && book["description"].toString().isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Descrição",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.indigo,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              book["description"],
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      ),
+                    ),
                   ],
                 ),
               ),
             ),
           ],
         ),
-      ),
-      // botão para adicionar livro
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white,
-        shape: const CircleBorder(
-          side: BorderSide(color: Colors.indigo, width: 2),
-        ),
-        onPressed: () {
-          Navigator.pushNamed(context, AddBookPage.route);
-        },
-        child: const Icon(Icons.add, color: Colors.indigo),
       ),
     );
   }
