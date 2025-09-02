@@ -26,7 +26,8 @@ class _HomePageState extends State<HomePage> {
   // Função que busca os livros na API
   Future<void> loadBooks() async {
     try {
-      final listBooks = await _apiService.getLivros(); // chama o método correto
+      final listBooks = await _apiService.getLivros();
+      print(listBooks); 
       setState(() {
         books = List<Map<String, dynamic>>.from(listBooks);
       });
@@ -86,6 +87,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
                         height: 180,
@@ -94,10 +96,10 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
                             color: Colors.grey[300],
-                            child: (book["image"] != null &&
-                                    (book["image"] as String).isNotEmpty)
+                            child: (book["cover_url"] != null &&
+                                    (book["cover_url"] as String).isNotEmpty)
                                 ? Image.network(
-                                    book["image"],
+                                    book["cover_url"],
                                     fit: BoxFit.cover,
                                     errorBuilder: (_, __, ___) =>
                                         Container(color: Colors.grey[300]),

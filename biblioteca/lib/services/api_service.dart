@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 class ApiService {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "https://bibliotecabackend.gigalixirapp.com",
+      baseUrl: "https://bibliotecabackend.gigalixirapp.com/api",
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 5),
       headers: {"Content-Type": "application/json"},
@@ -15,7 +15,7 @@ class ApiService {
   Future<Response> login(String email, String password) async {
     try {
       final response = await _dio.post(
-        '/login',
+        '/auth/login',
         data: {"email": email, "password": password},
       );
       return response;
@@ -27,8 +27,9 @@ class ApiService {
   // GET todos os livros
   Future<List<dynamic>> getLivros() async {
     try {
-      final response = await _dio.get('/livros');
-      return response.data;
+      final response = await _dio.get('/books');
+      return response.data['data'];
+
     } on DioException catch (e) {
       throw Exception('Erro ao buscar livros: ${e.message}');
     }
@@ -37,7 +38,7 @@ class ApiService {
   // ADD livro
   Future<Map<String, dynamic>> addLivro(Map<String, dynamic> livro) async {
     try {
-      final response = await _dio.post('/livros', data: livro);
+      final response = await _dio.post('/books', data: livro);
       return response.data;
     } on DioException catch (e) {
       throw Exception('Erro ao adicionar livro: ${e.message}');
@@ -56,7 +57,7 @@ class ApiService {
   // GET livro por ID
   Future<Map<String, dynamic>> getLivroById(String id) async {
     try {
-      final response = await _dio.get('/livros/$id');
+      final response = await _dio.get('/books/$id');
       return response.data;
     } on DioException catch (e) {
       throw Exception('Erro ao buscar livro $id: ${e.message}');
@@ -66,7 +67,7 @@ class ApiService {
   // UPDATE livro
   Future<Map<String, dynamic>> updateLivro(String id, Map<String, dynamic> livro) async {
     try {
-      final response = await _dio.put('/livros/$id', data: livro);
+      final response = await _dio.put('/books/$id', data: livro);
       return response.data;
     } on DioException catch (e) {
       throw Exception('Erro ao atualizar livro $id: ${e.message}');
