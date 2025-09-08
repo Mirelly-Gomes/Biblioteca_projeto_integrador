@@ -32,8 +32,6 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (response.statusCode == 200) {
-        // Se a API retornar token, você pode salvar aqui
-        // Exemplo: String token = response.data["token"];
 
         Navigator.pushReplacementNamed(context, HomePage.route);
       } else {
