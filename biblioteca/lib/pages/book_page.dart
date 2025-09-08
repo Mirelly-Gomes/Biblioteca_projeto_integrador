@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
 class BookPage extends StatefulWidget {
   static const String route = "/book";
@@ -13,8 +14,9 @@ class _BookPageState extends State<BookPage> {
   late TextEditingController _titleController;
   late TextEditingController _authorController;
   late TextEditingController _descriptionController;
-
   bool _isEditing = false;
+
+  final ApiService _apiService = ApiService();
 
   @override
   void initState() {
@@ -34,11 +36,22 @@ class _BookPageState extends State<BookPage> {
     super.dispose();
   }
 
-  void _saveChanges() {
-    widget.book["title"] = _titleController.text;
-    widget.book["author"] = _authorController.text;
-    widget.book["description"] = _descriptionController.text;
-    Navigator.pop(context, widget.book);
+  Future<void> _saveChanges() async {
+    try {
+      final updatedBook = {
+        "title": _titleController.text,
+        "author": _authorController.text,
+        "description": _descriptionController.text,
+      };
+
+      await _apiService.updateLivro(widget.book["id"].toString(), updatedBook);
+
+      Navigator.pop(context, updatedBook);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erro ao salvar: $e")),
+      );
+    }
   }
 
   @override
@@ -53,15 +66,13 @@ class _BookPageState extends State<BookPage> {
         backgroundColor: Colors.lightBlue,
         elevation: 0,
         title: const Text(
-          "Gerenciador de livros",
+          "Detalhes",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.exit_to_app, color: Colors.indigo),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () => Navigator.pop(context),
           ),
         ],
       ),
@@ -70,140 +81,107 @@ class _BookPageState extends State<BookPage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Capa
             Container(
               margin: const EdgeInsets.all(12),
               width: screenWidth * 0.4,
               height: screenHeight * 0.65,
               color: Colors.grey.shade300,
-              child:
-                  book["image"] != null && book["image"].toString().isNotEmpty
-                      ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(book["image"], fit: BoxFit.cover),
-                      )
-                      : null,
+              child: book["cover_url"] != null &&
+                      book["cover_url"].toString().isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(book["cover_url"], fit: BoxFit.cover),
+                    )
+                  : null,
             ),
-            // Informações
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Título
                     _isEditing
                         ? TextField(
-                          controller: _titleController,
-                          decoration: const InputDecoration(
-                            labelText: "Título",
-                            labelStyle: TextStyle(color: Colors.blue),
-                            border: OutlineInputBorder(),
-                          ),
-                          style: const TextStyle(color: Colors.black),
-                        )
-                        : (book["title"] != null &&
-                            book["title"].toString().isNotEmpty)
-                        ? Text.rich(
-                          TextSpan(
-                            children: [
-                              const TextSpan(
-                                text: "Título: ",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
+                            controller: _titleController,
+                            decoration: const InputDecoration(
+                              labelText: "Título",
+                              border: OutlineInputBorder(),
+                            ),
+                          )
+                        : Text.rich(
+                            TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: "Título: ",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue,
+                                  ),
                                 ),
-                              ),
-                              TextSpan(
-                                text: book["title"],
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.black,
+                                TextSpan(
+                                  text: book["title"] ?? "",
+                                  style: const TextStyle(fontSize: 20),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        )
-                        : const SizedBox(),
                     const SizedBox(height: 8),
-                    // Autor
                     _isEditing
                         ? TextField(
-                          controller: _authorController,
-                          decoration: const InputDecoration(
-                            labelText: "Autor",
-                            labelStyle: TextStyle(color: Colors.blue),
-                            border: OutlineInputBorder(),
+                            controller: _authorController,
+                            decoration: const InputDecoration(
+                              labelText: "Autor",
+                              border: OutlineInputBorder(),
+                            ),
+                          )
+                        : Text.rich(
+                            TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: "Autor: ",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: book["author"] ?? "",
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
                           ),
-                          style: const TextStyle(color: Colors.black),
-                        )
-                        : (book["author"] != null &&
-                            book["author"].toString().isNotEmpty)
-                        ? Text.rich(
-                          TextSpan(
+                    const SizedBox(height: 20),
+                    _isEditing
+                        ? TextField(
+                            controller: _descriptionController,
+                            decoration: const InputDecoration(
+                              labelText: "Descrição",
+                              border: OutlineInputBorder(),
+                            ),
+                            maxLines: 5,
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const TextSpan(
-                                text: "Autor: ",
+                              const Text(
+                                "Descrição",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blue,
                                 ),
                               ),
-                              TextSpan(
-                                text: book["author"],
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                ),
+                              const SizedBox(height: 10),
+                              Text(
+                                book["description"] ?? "",
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ],
                           ),
-                        )
-                        : const SizedBox(),
                     const SizedBox(height: 20),
-                    // Descrição
-                    _isEditing
-                        ? TextField(
-                          controller: _descriptionController,
-                          decoration: const InputDecoration(
-                            labelText: "Descrição",
-                            labelStyle: TextStyle(color: Colors.blue),
-                            border: OutlineInputBorder(),
-                          ),
-                          maxLines: 5,
-                          style: const TextStyle(color: Colors.black),
-                        )
-                        : (book["description"] != null &&
-                            book["description"].toString().isNotEmpty)
-                        ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Descrição",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              book["description"],
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        )
-                        : const SizedBox(),
-                    const SizedBox(height: 20),
-
                     Center(
                       child: SizedBox(
                         width: screenWidth * 0.3,
@@ -213,9 +191,7 @@ class _BookPageState extends State<BookPage> {
                             if (_isEditing) {
                               _saveChanges();
                             } else {
-                              setState(() {
-                                _isEditing = true;
-                              });
+                              setState(() => _isEditing = true);
                             }
                           },
                           style: ElevatedButton.styleFrom(

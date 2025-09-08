@@ -31,7 +31,6 @@ class ApiService {
     );
   }
 
-  // LOGIN
   Future<Response> login(String email, String password) async {
     try {
       final response = await dio.post(
@@ -50,7 +49,6 @@ class ApiService {
     }
   }
 
-  // REGISTER (precisa estar logado como admin)
   Future<Response> register(String email, String password, String role) async {
     try {
       final response = await dio.post(
@@ -67,7 +65,6 @@ class ApiService {
     }
   }
 
-  // GET todos os livros
   Future<List<dynamic>> getLivros() async {
     try {
       final response = await dio.get('/books');
@@ -77,7 +74,6 @@ class ApiService {
     }
   }
 
-  // GET livro por ID
   Future<Map<String, dynamic>> getLivroById(String id) async {
     try {
       final response = await dio.get('/books/$id');
@@ -87,27 +83,24 @@ class ApiService {
     }
   }
 
-  // ADD livro
   Future<Map<String, dynamic>> addLivro(Map<String, dynamic> livro) async {
     try {
-      final response = await dio.post('/books', data: livro);
+      final response = await dio.post('/books', data: {"book": livro});
       return response.data;
     } on DioException catch (e) {
       throw Exception('Erro ao adicionar livro: ${e.message}');
     }
   }
 
-  // UPDATE livro
   Future<Map<String, dynamic>> updateLivro(String id, Map<String, dynamic> livro) async {
     try {
-      final response = await dio.put('/books/$id', data: livro);
+      final response = await dio.put('/books/$id', data: {"book": livro});
       return response.data;
     } on DioException catch (e) {
       throw Exception('Erro ao atualizar livro $id: ${e.message}');
     }
   }
 
-  // DELETE livro
   Future<void> deleteLivro(String id) async {
     try {
       await dio.delete('/books/$id');

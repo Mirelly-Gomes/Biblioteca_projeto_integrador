@@ -22,11 +22,9 @@ class _HomePageState extends State<HomePage> {
     loadBooks();
   }
 
-  // buscar livros
   Future<void> loadBooks() async {
     try {
       final listBooks = await _apiService.getLivros();
-      print(listBooks);
       setState(() {
         books = List<Map<String, dynamic>>.from(listBooks);
       });
@@ -62,10 +60,11 @@ class _HomePageState extends State<HomePage> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             int cross = 4;
-            if (constraints.maxWidth < 480)
+            if (constraints.maxWidth < 480) {
               cross = 2;
-            else if (constraints.maxWidth < 820)
+            } else if (constraints.maxWidth < 820) {
               cross = 3;
+            }
 
             return GridView.builder(
               itemCount: books.length,
@@ -78,12 +77,19 @@ class _HomePageState extends State<HomePage> {
                 final book = books[index];
 
                 return GestureDetector(
-                  onTap:
-                      () => Navigator.pushNamed(
-                        context,
-                        BookPage.route,
-                        arguments: book,
-                      ),
+                  onTap: () async {
+                    final updatedBook = await Navigator.pushNamed(
+                      context,
+                      BookPage.route,
+                      arguments: book,
+                    );
+
+                    if (updatedBook != null && updatedBook is Map) {
+                      setState(() {
+                        books[index] = Map<String, dynamic>.from(updatedBook);
+                      });
+                    }
+                  },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,

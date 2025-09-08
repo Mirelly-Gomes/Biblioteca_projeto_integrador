@@ -12,7 +12,7 @@ class AddBookPage extends StatefulWidget {
 }
 
 class _AddBookPageState extends State<AddBookPage> {
-  final ApiService _apiService = ApiService(); // usa ApiService
+  final ApiService _apiService = ApiService();
   TextEditingController titleController = TextEditingController();
   TextEditingController authorController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -88,7 +88,7 @@ class _AddBookPageState extends State<AddBookPage> {
         backgroundColor: const Color(0xFF40B8FF),
         elevation: 0,
         title: const Text(
-          "Gerenciador de livros",
+          "Novo Livro",
           style: TextStyle(color: Colors.white),
         ),
         actions: [
@@ -173,7 +173,7 @@ class _AddBookPageState extends State<AddBookPage> {
                     ),
                   ),
                   child: const Text(
-                    "Adicionar",
+                    "Salvar",
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

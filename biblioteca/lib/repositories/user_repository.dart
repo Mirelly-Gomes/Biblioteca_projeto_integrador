@@ -2,7 +2,7 @@ import 'package:biblioteca/data/models/user.dart';
 import '../services/api_service.dart';
 
 class UserRepository {
-  final ApiService _api = ApiService(); // Usa ApiService
+  final ApiService _api = ApiService(); 
 
   // Listar todos os usuários
   Future<List<AppUser>> list() async {
