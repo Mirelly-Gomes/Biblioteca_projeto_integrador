@@ -11,15 +11,30 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  late TextEditingController emailController;
+  late TextEditingController passwordController;
   bool isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    emailController = TextEditingController(text: "admin@biblioteca.com");
+    passwordController = TextEditingController(text: "admin123");
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  // login
   Future<void> login() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Preencha todos os campos")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Preencha todos os campos")));
       return;
     }
 
@@ -32,17 +47,16 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (response.statusCode == 200) {
-
-        Navigator.pushReplacementNamed(context, HomePage.route);
+        Navigator.pushReplacementNamed(context, HomePage.route); // vai pra home
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Erro no login: ${response.statusMessage}")),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erro ao conectar: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Erro ao conectar: $e")));
     } finally {
       setState(() => isLoading = false);
     }
@@ -52,6 +66,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        // fundo
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/images/fundo.png"),
@@ -68,6 +83,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             child: Row(
               children: [
+                //  formulario
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(40),
@@ -91,6 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         const SizedBox(height: 30),
+                        // email
                         TextField(
                           controller: emailController,
                           decoration: InputDecoration(
@@ -106,6 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                           cursorColor: const Color(0xFF1A00D9),
                         ),
                         const SizedBox(height: 20),
+                        // senha
                         TextField(
                           controller: passwordController,
                           obscureText: true,
@@ -122,6 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                           cursorColor: const Color(0xFF1A00D9),
                         ),
                         const SizedBox(height: 40),
+                        // botão
                         SizedBox(
                           width: double.infinity,
                           height: 45,
@@ -133,19 +152,23 @@ class _LoginPageState extends State<LoginPage> {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-                            child: isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
-                                : const Text(
-                                    "Entrar",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
+                            child:
+                                isLoading
+                                    ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                    : const Text(
+                                      "Entrar",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                           ),
                         ),
                         const SizedBox(height: 20),
+                        // cadastro
                         Center(
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, '/register'); // Tela de cadastro
+                              Navigator.pushNamed(context, '/register');
                             },
                             child: const Text(
                               "Cadastre-se",
@@ -161,6 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+                // imagem
                 Expanded(
                   child: Container(
                     decoration: const BoxDecoration(

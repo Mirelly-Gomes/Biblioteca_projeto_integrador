@@ -137,8 +137,14 @@ class _RegisterPageState extends State<RegisterPage> {
                         DropdownButtonFormField<String>(
                           value: role,
                           items: const [
-                            DropdownMenuItem(value: 'user', child: Text('Usuário')),
-                            DropdownMenuItem(value: 'admin', child: Text('Administrador')),
+                            DropdownMenuItem(
+                              value: 'user',
+                              child: Text('Usuário'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'admin',
+                              child: Text('Administrador'),
+                            ),
                           ],
                           onChanged: (v) => setState(() => role = v ?? 'user'),
                           decoration: InputDecoration(
@@ -164,12 +170,15 @@ class _RegisterPageState extends State<RegisterPage> {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-                            child: isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
-                                : const Text(
-                                    "Registrar",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
+                            child:
+                                isLoading
+                                    ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                    : const Text(
+                                      "Registrar",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                           ),
                         ),
                         const SizedBox(height: 20),

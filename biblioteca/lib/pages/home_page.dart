@@ -1,10 +1,9 @@
-import '../services/api_service.dart'; // usa a classe ApiService
+import '../services/api_service.dart';
 import 'package:biblioteca/pages/add_book.dart';
 import 'package:biblioteca/pages/book_page.dart';
 import 'package:biblioteca/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
-// Página inicial que lista os livros
 class HomePage extends StatefulWidget {
   static const String route = "/home";
   const HomePage({super.key});
@@ -14,27 +13,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final ApiService _apiService = ApiService(); // usa API
-  List<Map<String, dynamic>> books = []; // lista de livros
+  final ApiService _apiService = ApiService();
+  List<Map<String, dynamic>> books = [];
 
   @override
   void initState() {
     super.initState();
-    loadBooks(); // carrega os livros ao iniciar
+    loadBooks();
   }
 
-  // Função que busca os livros na API
+  // buscar livros
   Future<void> loadBooks() async {
     try {
       final listBooks = await _apiService.getLivros();
-      print(listBooks); 
+      print(listBooks);
       setState(() {
         books = List<Map<String, dynamic>>.from(listBooks);
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erro ao carregar livros: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Erro ao carregar livros: $e")));
     }
   }
 
@@ -46,10 +45,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.blue[400],
         title: const Text(
           "Gerenciador de livros",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -66,8 +62,10 @@ class _HomePageState extends State<HomePage> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             int cross = 4;
-            if (constraints.maxWidth < 480) cross = 2;
-            else if (constraints.maxWidth < 820) cross = 3;
+            if (constraints.maxWidth < 480)
+              cross = 2;
+            else if (constraints.maxWidth < 820)
+              cross = 3;
 
             return GridView.builder(
               itemCount: books.length,
@@ -80,11 +78,12 @@ class _HomePageState extends State<HomePage> {
                 final book = books[index];
 
                 return GestureDetector(
-                  onTap: () => Navigator.pushNamed(
-                    context,
-                    BookPage.route,
-                    arguments: book,
-                  ),
+                  onTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        BookPage.route,
+                        arguments: book,
+                      ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
@@ -96,15 +95,19 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
                             color: Colors.grey[300],
-                            child: (book["cover_url"] != null &&
-                                    (book["cover_url"] as String).isNotEmpty)
-                                ? Image.network(
-                                    book["cover_url"],
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) =>
-                                        Container(color: Colors.grey[300]),
-                                  )
-                                : const SizedBox.shrink(),
+                            child:
+                                (book["cover_url"] != null &&
+                                        (book["cover_url"] as String)
+                                            .isNotEmpty)
+                                    ? Image.network(
+                                      book["cover_url"],
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (_, __, ___) => Container(
+                                            color: Colors.grey[300],
+                                          ),
+                                    )
+                                    : const SizedBox.shrink(),
                           ),
                         ),
                       ),
@@ -129,8 +132,8 @@ class _HomePageState extends State<HomePage> {
                       IconButton(
                         tooltip: "Excluir",
                         onPressed: () async {
-                          await _apiService.deleteLivro(book["id"].toString()); // método correto
-                          loadBooks(); // recarrega a lista
+                          await _apiService.deleteLivro(book["id"].toString());
+                          loadBooks();
                         },
                         icon: const Icon(Icons.delete, color: Colors.black),
                         iconSize: 20,
@@ -144,12 +147,26 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(
-          context,
-          AddBookPage.route,
-        ).then((_) => loadBooks()),
-        child: const Icon(Icons.add),
+      floatingActionButton: SizedBox(
+        width: 180,
+        height: 45,
+        child: ElevatedButton(
+          onPressed:
+              () => Navigator.pushNamed(
+                context,
+                AddBookPage.route,
+              ).then((_) => loadBooks()),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF40B8FF),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          child: const Text(
+            "Adicionar Livro",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ),
       ),
     );
   }

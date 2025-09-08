@@ -50,13 +50,11 @@ class _AddBookPageState extends State<AddBookPage> {
         },
       );
 
-      // limpa os campos
       titleController.clear();
       authorController.clear();
       descriptionController.clear();
       imageController.clear();
       pagesController.clear();
-
     } catch (e) {
       QuickAlert.show(
         context: context,
@@ -85,7 +83,7 @@ class _AddBookPageState extends State<AddBookPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE6F4FF), 
+      backgroundColor: const Color(0xFFE6F4FF),
       appBar: AppBar(
         backgroundColor: const Color(0xFF40B8FF),
         elevation: 0,
@@ -112,7 +110,7 @@ class _AddBookPageState extends State<AddBookPage> {
             padding: const EdgeInsets.all(24),
             margin: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white, 
+              color: Colors.white,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -122,7 +120,7 @@ class _AddBookPageState extends State<AddBookPage> {
                 ),
               ],
             ),
-            width: 380, 
+            width: 380,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -135,26 +133,51 @@ class _AddBookPageState extends State<AddBookPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                TextField(controller: titleController, decoration: inputStyle("Título")),
+                TextField(
+                  controller: titleController,
+                  decoration: inputStyle("Título"),
+                ),
                 const SizedBox(height: 12),
-                TextField(controller: authorController, decoration: inputStyle("Autor")),
+                TextField(
+                  controller: authorController,
+                  decoration: inputStyle("Autor"),
+                ),
                 const SizedBox(height: 12),
-                TextField(controller: descriptionController, maxLines: 4, decoration: inputStyle("Descrição")),
+                TextField(
+                  controller: descriptionController,
+                  maxLines: 4,
+                  decoration: inputStyle("Descrição"),
+                ),
                 const SizedBox(height: 12),
-                TextField(controller: pagesController, keyboardType: TextInputType.number, decoration: inputStyle("Quantidade de páginas")),
+                TextField(
+                  controller: pagesController,
+                  keyboardType: TextInputType.number,
+                  decoration: inputStyle("Quantidade de páginas"),
+                ),
                 const SizedBox(height: 12),
-                TextField(controller: imageController, decoration: inputStyle("Imagem")),
+                TextField(
+                  controller: imageController,
+                  decoration: inputStyle("Imagem"),
+                ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: isSaving ? null : saveBook,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF40B8FF),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 14,
+                    ),
                   ),
                   child: const Text(
                     "Adicionar",
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
